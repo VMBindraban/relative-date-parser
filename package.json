@@ -4,7 +4,7 @@
   "description": "Parse relative date description to Date object",
   "main": "parse.js",
   "scripts": {
-    "test": "tape tape/*.js"
+    "test": "tape test/*.js"
   },
   "author": "Peter-Paul <mail@ppvg.nl>",
   "license": "MIT",
