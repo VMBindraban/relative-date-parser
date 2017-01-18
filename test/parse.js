@@ -146,6 +146,19 @@ const cases = [
     expected: [1984, 7, 21]
   },
 
+  // same week in other year
+  {
+    input: [-1, null, 0, 0],
+    reference: [2000, 0, 1],
+    expected: [1999, 0, 1]
+  },
+  {
+    input: ['+1', null, 0, 0],
+    reference: [2000, 0, 1],
+    expected: [2001, 0, 1]
+  },
+
+
   // absolute last day of month
   {
     input: [0, -2, "last", null],
