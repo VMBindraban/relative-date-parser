@@ -2,7 +2,7 @@
   "name": "relative-date-parser",
   "version": "1.0.0",
   "description": "Parse relative date description to Date object",
-  "main": "index.js",
+  "main": "parse.js",
   "scripts": {
     "test": "tape tape/*.js"
   },
@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "tape": "^4.6.3"
+  },
+  "jspm": {
+    "registry": "npm"
   }
 }
