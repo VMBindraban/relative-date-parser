@@ -34,8 +34,15 @@ module.exports = function parse (input, referenceDate) {
     throw new Error('Invalid day');
   }
 
+  let validMonth = isValidPart(month);
+  let validWeek = isValidPart(week);
+
   if (!isValidPart(month) && !isValidPart(week)) {
     throw new Error('Invalid month / week');
+  }
+
+  if (validWeek && day === 'last') {
+    throw new Error('Invalid day: "last" only supported with month');
   }
 
   let result = moment(referenceDate || new Date()).locale('nl'); // TODO FIXME XXX locale

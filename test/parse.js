@@ -28,6 +28,14 @@ test('throw on invalid input', t => {
     parse({ year: 0, month: 0 });
   }, 'invalid input (missing day)');
 
+  t.throws(() => {
+    parse({ year: 0, week: 0 });
+  }, 'invalid input (missing day)');
+
+  t.throws(() => {
+    parse({ year: 0, week: 0, day: 'last' });
+  }, 'invalid input ("last" day of week)');
+
   t.end();
 })
 
