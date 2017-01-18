@@ -2,6 +2,19 @@ const moment = require('moment');
 
 const relativePartRegex = /^[+-]/;
 
+/**
+ * Input can be an object or an array. The year and day fields are mandatory.
+ * In addition to that, either month or week must be given.
+ *
+ * @param {object|array}    input
+ * @param   {number|string}   input.year
+ * @param   {number|string}   [input.month]
+ * @param   {number|string}   input.day
+ * @param   {number|string}   [input.week]
+ * @param {Date}            [referenceDate]
+ *
+ * @return {Date}
+ */
 module.exports = function parse (input, referenceDate) {
   if (Array.isArray(input)) {
     var [ year, month, day, week ] = input;
