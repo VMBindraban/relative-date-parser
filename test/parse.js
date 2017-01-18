@@ -17,10 +17,6 @@ test('throw on invalid input', t => {
   }, 'invalid input (string)');
 
   t.throws(() => {
-    parse([0, 0, 0, null]);
-  }, 'invalid input (array)');
-
-  t.throws(() => {
     parse({ year: 0 });
   }, 'invalid input (year only)');
 
@@ -162,7 +158,19 @@ cases.forEach(function (testCase, i) {
   let { input, reference, expected } = testCase;
   let [ year, month, day, week ] = input;
 
-  test(`case ${i + 1}: ${JSON.stringify(input)}`, t => {
+  test(`case ${i + 1}: ${JSON.stringify(input)} (as array)`, t => {
+    let result = parse(
+      { year, month, day, week },
+      new Date(...reference)
+    );
+
+    t.equal(result.getFullYear(), expected[0], 'year');
+    t.equal(result.getMonth(), expected[1], 'month');
+    t.equal(result.getDate(), expected[2], 'day');
+    t.end();
+  });
+
+  test(`case ${i + 1}: ${JSON.stringify(input)} (as object)`, t => {
     let result = parse(
       { year, month, day, week },
       new Date(...reference)

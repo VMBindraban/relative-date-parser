@@ -2,21 +2,32 @@ const moment = require('moment');
 
 const relativePartRegex = /^[+-]/;
 
-module.exports = function parse ({ year, month, day, week }, referenceDate) {
-  let valid = {
-    year: isValidPart(year),
-    month: isValidPart(month),
-    day: isValidDay(day),
-    week: isValidPart(week)
-  };
+module.exports = function parse (input, referenceDate) {
+  if (Array.isArray(input)) {
+    var [ year, month, day, week ] = input;
+  }
+  else if (typeof input === 'object') {
+    var { year, month, day, week } = input;
+  }
+  else {
+    throw new Error('Missing input');
+  }
 
-  if (!(valid.year && valid.day && (valid.week || valid.month))) {
-    throw new Error('Invalid input');
+  if (!isValidPart(year)) {
+    throw new Error('Invalid year');
+  }
+
+  if (!isValidDay(day)) {
+    throw new Error('Invalid day');
+  }
+
+  if (!isValidPart(month) && !isValidPart(week)) {
+    throw new Error('Invalid month / week');
   }
 
   let result = moment(referenceDate || new Date()).locale('nl'); // TODO FIXME XXX locale
 
-  if (valid.week) {
+  if (isValidPart(week)) {
     if (isRelative(week)) {
       applyInput(result, year, 'year');
       applyInput(result, week, 'week');
@@ -53,6 +64,10 @@ function isValidDay (day) {
   return isValidPart(day) || day === 'last';
 }
 
+function isRelative (part) {
+  return relativePartRegex.test(part) || part === '0' || part <= 0;
+}
+
 function applyInput (result, input, unit) {
   if (isRelative(input)) {
     if (unit === 'date') {
@@ -73,8 +88,4 @@ function applyInput (result, input, unit) {
     input = (unit === 'month') ? input - 1 : input;
     result.set(unit, input);
   }
-}
-
-function isRelative (part) {
-  return relativePartRegex.test(part) || part === '0' || part <= 0;
 }
