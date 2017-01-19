@@ -179,11 +179,11 @@ cases.forEach(function (testCase, i) {
   let { input, reference, expected } = testCase;
   let [ year, month, day, week ] = input;
 
-  test(`case ${i + 1}: ${JSON.stringify(input)} (as array)`, t => {
-    let result = parse(
-      { year, month, day, week },
-      new Date(...reference)
-    );
+  let arrayInput = [ year, month, day, week ];
+  let objectInput = { year, month, day, week };
+
+  test(`case ${i + 1}: ${JSON.stringify(arrayInput)}`, t => {
+    let result = parse(arrayInput, new Date(...reference));
 
     t.equal(result.getFullYear(), expected[0], 'year');
     t.equal(result.getMonth(), expected[1], 'month');
@@ -191,11 +191,8 @@ cases.forEach(function (testCase, i) {
     t.end();
   });
 
-  test(`case ${i + 1}: ${JSON.stringify(input)} (as object)`, t => {
-    let result = parse(
-      { year, month, day, week },
-      new Date(...reference)
-    );
+  test(`case ${i + 1}: ${JSON.stringify(objectInput)}`, t => {
+    let result = parse(objectInput, new Date(...reference));
 
     t.equal(result.getFullYear(), expected[0], 'year');
     t.equal(result.getMonth(), expected[1], 'month');
