@@ -22,7 +22,11 @@ test('throw on invalid input', t => {
 
   t.throws(() => {
     parse({ year: 0, day: 0 });
-  }, 'invalid input (missing month)');
+  }, 'invalid input (missing month or week)');
+
+  t.throws(() => {
+    parse({ year: 0, month: 0, day: 0, week: 0 });
+  }, 'invalid input (both month AND week)');
 
   t.throws(() => {
     parse({ year: 0, month: 0 });
