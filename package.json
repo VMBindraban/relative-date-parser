@@ -1,6 +1,6 @@
 {
   "name": "relative-date-parser",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Parse relative date description to Date object",
   "main": "parse.js",
   "scripts": {
