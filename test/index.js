@@ -1,64 +1,26 @@
-const test = require('tape');
+const zora = require('zora');
 
-const parse = require('../parse');
+const plan = zora();
+const parse = require('../index');
 
-test('export type', t => {
+plan.test('export type', function * (t) {
   t.ok(typeof parse === 'function', 'function');
-  t.end();
 });
 
-test('throw on invalid input', t => {
-  t.throws(() => {
-    parse();
-  }, 'no input');
-
-  t.throws(() => {
-    parse('2017-01-01');
-  }, 'invalid input (string)');
-
-  t.throws(() => {
-    parse({ year: 0 });
-  }, 'invalid input (year only)');
-
-  t.throws(() => {
-    parse({ year: 0, day: 0 });
-  }, 'invalid input (missing month or week)');
-
-  t.throws(() => {
-    parse({ year: 0, month: 0, day: 0, week: 0 });
-  }, 'invalid input (both month AND week)');
-
-  t.throws(() => {
-    parse({ year: 0, month: 0 });
-  }, 'invalid input (missing day)');
-
-  t.throws(() => {
-    parse({ year: 0, week: 0 });
-  }, 'invalid input (missing day)');
-
-  t.throws(() => {
-    parse({ year: 0, week: 0, day: 'last' });
-  }, 'invalid input ("last" day of week)');
-
-  t.end();
-})
-
-test('return type', t => {
+plan.test('return type', function * (t) {
   t.ok(parse({ year: 0, month: 0, day: 0 }) instanceof Date, 'Date');
-  t.end();
 });
 
-test('current date', t => {
+plan.test('current date', function * (t) {
   let now = new Date();
   let result = parse({ year: 0, month: 0, day: 0 });
 
   t.equal(result.getFullYear(), now.getFullYear(), 'year');
   t.equal(result.getMonth(), now.getMonth(), 'month');
   t.equal(result.getDate(), now.getDate(), 'day');
-  t.end();
 });
 
-test('reference date ', t => {
+plan.test('reference date ', function * (t) {
   let now = new Date();
   let reference = new Date(1984, 11, 31);
   let result = parse({ year: 0, month: 0, day: 0 }, reference);
@@ -66,7 +28,32 @@ test('reference date ', t => {
   t.equal(result.getFullYear(), 1984, 'year');
   t.equal(result.getMonth(), 11, 'month');
   t.equal(result.getDate(), 31, 'day');
-  t.end();
+});
+
+const invalidCases = [
+  undefined,
+  '',
+  '2017-01-01',
+  { year: 0 },
+  { year: 0, day: 0 },
+  { year: 0, month: 0, day: 0, week: 0 },
+  { year: 0, month: 0 },
+  { year: 0, week: 0 },
+  { year: 0, week: 0, day: 'last' }
+];
+
+const errorMessageRegex = /^invalid/i;
+
+invalidCases.forEach((testCase, i) => {
+  plan.test(`invalid input ${i + 1}: ${JSON.stringify(testCase)}`, function * (t) {
+    try {
+      parse(testCase);
+    } catch (e) {
+      var error = e;
+    }
+    t.ok(error instanceof Error, 'should throw error');
+    t.ok(errorMessageRegex.test(error && error.message), 'error message should start with "invalid"');
+  });
 });
 
 const cases = [
@@ -186,21 +173,21 @@ cases.forEach(function (testCase, i) {
   let arrayInput = [ year, month, day, week ];
   let objectInput = { year, month, day, week };
 
-  test(`case ${i + 1}: ${JSON.stringify(arrayInput)}`, t => {
+  plan.test(`valid input ${i*2 + 1}: ${JSON.stringify(arrayInput)}`, function * (t) {
     let result = parse(arrayInput, new Date(...reference));
 
     t.equal(result.getFullYear(), expected[0], 'year');
     t.equal(result.getMonth(), expected[1], 'month');
     t.equal(result.getDate(), expected[2], 'day');
-    t.end();
   });
 
-  test(`case ${i + 1}: ${JSON.stringify(objectInput)}`, t => {
+  plan.test(`valid input ${i*2 + 2}: ${JSON.stringify(objectInput)}`, function * (t) {
     let result = parse(objectInput, new Date(...reference));
 
     t.equal(result.getFullYear(), expected[0], 'year');
     t.equal(result.getMonth(), expected[1], 'month');
     t.equal(result.getDate(), expected[2], 'day');
-    t.end();
   });
 });
+
+plan.run();
