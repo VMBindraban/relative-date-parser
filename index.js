@@ -21,9 +21,9 @@ const units = ['year', 'month', 'day', 'week'];
  */
 module.exports = function parse (input, referenceDate) {
   input = parseInput(input);
-  validateInput(input)
+  validateInput(input);
 
-  let result = moment(referenceDate || new Date()).locale('nl'); // TODO FIXME XXX locale
+  var result = moment(referenceDate || new Date()).locale('nl'); // TODO FIXME XXX locale
 
   applyYear(result, input);
   applyMonth(result, input);
@@ -33,9 +33,12 @@ module.exports = function parse (input, referenceDate) {
   return result.toDate();
 };
 
-function applyYear (result, { year, week }) {
+function applyYear (result, input) {
+  var year = input.year;
+  var week = input.week;
+
   if (week.valid && !week.relative) {
-    let weekYear = year.relative
+    var weekYear = year.relative
       ? (result.year() + year.value)
       : year.value;
 
@@ -49,7 +52,9 @@ function applyYear (result, { year, week }) {
   }
 }
 
-function applyMonth (result, { month }) {
+function applyMonth (result, input) {
+  var month = input.month;
+
   if (!month.valid) {
     return;
   }
@@ -62,7 +67,9 @@ function applyMonth (result, { month }) {
   }
 }
 
-function applyWeek (result, { week }) {
+function applyWeek (result, input) {
+  var week = input.week;
+
   if (week.relative) {
     result.add(week.value * 7, 'day');
   }
@@ -71,7 +78,10 @@ function applyWeek (result, { week }) {
   }
 }
 
-function applyDay (result, { week, day }) {
+function applyDay (result, input) {
+  var week = input.week;
+  var day = input.day;
+
   if (day.relative) {
     result.add(day.value, 'day');
   }
@@ -79,27 +89,27 @@ function applyDay (result, { week, day }) {
     result.endOf('month');
   }
   else {
-    let unit = week.valid ? 'day' : 'date';
+    var unit = week.valid ? 'day' : 'date';
     result.set(unit, day.value);
   }
 }
 
 function parseInput (input) {
   if (typeof input !== 'object') {
-    throw new Error(`Invalid input type (${typeof input})`);
+    throw new Error('Invalid input type (' + (typeof input)+ ')');
   }
 
-  let isArray = Array.isArray(input);
-  let parsedInput = {};
+  var isArray = Array.isArray(input);
+  var parsedInput = {};
 
-  units.forEach((unit, i) => {
-    let value = isArray ? input[i] : input[unit];
-    let valid = isValid(unit, value);
-    let relative = valid && isRelative(value);
+  units.forEach(function (unit, i) {
+    var value = isArray ? input[i] : input[unit];
+    var valid = isValid(unit, value);
+    var relative = valid && isRelative(value);
 
     value = (value === 'last') ? value : parseInt(value, 10);
 
-    parsedInput[unit] = { value, valid, relative };
+    parsedInput[unit] = { value: value, valid: valid, relative: relative };
   });
 
   return parsedInput;
@@ -117,7 +127,12 @@ function isRelative (value) {
   return relativePartRegex.test(value) || value === '0' || value <= 0;
 }
 
-function validateInput ({ year, month, week, day }) {
+function validateInput (input) {
+  var year = input.year;
+  var month = input.month;
+  var week = input.week;
+  var day = input.day;
+
   if (!year.valid) {
     throw new Error('Invalid year');
   }
