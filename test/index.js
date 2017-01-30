@@ -46,13 +46,7 @@ const errorMessageRegex = /^invalid/i;
 
 invalidCases.forEach((testCase, i) => {
   plan.test(`invalid input ${i + 1}: ${JSON.stringify(testCase)}`, function * (t) {
-    try {
-      parse(testCase);
-    } catch (e) {
-      var error = e;
-    }
-    t.ok(error instanceof Error, 'should throw error');
-    t.ok(errorMessageRegex.test(error && error.message), 'error message should start with "invalid"');
+    t.throws(() => { parse(testCase) }, errorMessageRegex);
   });
 });
 
